@@ -14,10 +14,10 @@ function set_ntp(){
 #获取公网ip，设置共享密钥
 function set_shell_input1() {
 	clear	
-	sqladmin=0p0o0i0900
+	sqladmin=lc3360001
 	yum install lynx -y
 	public_ip=`lynx --source www.monip.org | sed -nre 's/^.* (([0-9]{1,3}\.){3}[0-9]{1,3}).*$/\1/p'`
-	ike_passwd=fastvpn
+	ike_passwd=ezioximliu
 yum install network-tools -y
 }
 function set_install_pro2(){
@@ -38,8 +38,8 @@ function set_mysql3() {
 	sleep 3
 	mysqladmin -u root password ""${sqladmin}""
 	mysql -uroot -p${sqladmin} -e "create database radius;"
-	mysql -uroot -p${sqladmin} -e "grant all privileges on radius.* to radius@localhost identified by 'p0radius_0p';"
-	mysql -uradius -p'p0radius_0p' radius < /etc/raddb/mods-config/sql/main/mysql/schema.sql  
+	mysql -uroot -p${sqladmin} -e "grant all privileges on radius.* to radius@localhost identified by 'lc199028';"
+	mysql -uradius -plc199028 radius < /etc/raddb/mods-config/sql/main/mysql/schema.sql  
 	systemctl restart mariadb
 }
 
@@ -60,7 +60,7 @@ function set_freeradius4(){
 	sed -i '/port = 3306/s/^#//' /etc/raddb/mods-available/sql
 	sed -i '/login = "radius"/s/^#//' /etc/raddb/mods-available/sql
 	sed -i '/password = "radpass"/s/^#//' /etc/raddb/mods-available/sql
-	sed -i 's/password = "radpass"/password = "p0radius_0p"/g' /etc/raddb/mods-available/sql	
+	sed -i 's/password = "radpass"/password = "lc199028"/g' /etc/raddb/mods-available/sql	
 	systemctl restart radiusd
 	sleep 3
 }
@@ -72,11 +72,11 @@ function set_daloradius5(){
 	chown -R apache:apache /var/www/html/daloradius/
 	chmod 664 /var/www/html/daloradius/library/daloradius.conf.php
 	cd /var/www/html/daloradius/
-	mysql -uradius -p'p0radius_0p' radius < contrib/db/fr2-mysql-daloradius-and-freeradius.sql
-	mysql -uradius -p'p0radius_0p' radius < contrib/db/mysql-daloradius.sql
+	mysql -uradius -plc199028 radius < contrib/db/fr2-mysql-daloradius-and-freeradius.sql
+	mysql -uradius -plc199028 radius < contrib/db/mysql-daloradius.sql
 	sleep 3
 	sed -i "s/\['CONFIG_DB_USER'\] = 'root'/\['CONFIG_DB_USER'\] = 'radius'/g"  /var/www/html/daloradius/library/daloradius.conf.php
-	sed -i "s/\['CONFIG_DB_PASS'\] = ''/\['CONFIG_DB_PASS'\] = 'p0radius_0p'/g" /var/www/html/daloradius/library/daloradius.conf.php
+	sed -i "s/\['CONFIG_DB_PASS'\] = ''/\['CONFIG_DB_PASS'\] = 'lc199028'/g" /var/www/html/daloradius/library/daloradius.conf.php
 	yum -y install epel-release
 	yum -y install php-pear-DB
 	systemctl restart mariadb.service 
@@ -376,8 +376,8 @@ iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A INPUT -p icmp -j ACCEPT
 iptables -A INPUT -p tcp --dport 22 -j ACCEPT
-iptables -A INPUT -p tcp --dport 9090 -j ACCEPT
-iptables -A INPUT -p tcp --dport 9091 -j ACCEPT
+iptables -A INPUT -p tcp --dport 3361 -j ACCEPT
+iptables -A INPUT -p tcp --dport 3362 -j ACCEPT
 iptables -A INPUT -p tcp --dport 5000 -j ACCEPT 
 iptables -A INPUT -p tcp --dport 1723 -j ACCEPT
 iptables -A INPUT -p gre -j ACCEPT
@@ -401,15 +401,15 @@ EOF
 
 function set_web_config(){
 echo  "
-Listen 9090
-Listen 9091
-<VirtualHost *:9090>
+Listen 3361
+Listen 3362
+<VirtualHost *:3361>
  DocumentRoot "/var/www/html/daloradius"
  ServerName daloradius
  ErrorLog "logs/daloradius-error.log"
  CustomLog "logs/daloradius-access.log" common
 </VirtualHost>
-<VirtualHost *:9091>
+<VirtualHost *:3362>
  DocumentRoot "/var/www/html/user_reg_new"
  ServerName userReg
  ErrorLog "logs/test-error.log"
@@ -494,9 +494,9 @@ echo "==========================================================================
 
                    mysql root用户密码:0p0o0i0900      
 
-		          用户注册后台登录地址:http://$newPubIP:9091
+		          用户注册后台登录地址:http://$newPubIP:3361
 
-		          VPN 账号管理后台地址：http://$newPubIP:9090
+		          VPN 账号管理后台地址：http://$newPubIP:3362
 		                             账号：administrator 密码:radius
 
 ==========================================================================" > /root/info.txt
